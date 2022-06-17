@@ -390,8 +390,6 @@ if (!(project.hasProperty('env') && project.getProperty('env') == 'dev')) {
 
 task integrationTest(type:Test) {
     description = "Run integration tests (located in src/integrationTest/java). Starts Tomcat in daemon mode before executing the tests (and stops it after)."
-    dependsOn cargoStartLocal
-    finalizedBy cargoStopLocal
 
     testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
     classpath = project.sourceSets.integrationTest.runtimeClasspath
