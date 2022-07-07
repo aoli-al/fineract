@@ -465,7 +465,8 @@ task setBlankPassword {
 
 bootRun {
     jvmArgs = [
-        "-Dspring.output.ansi.enabled=ALWAYS"
+        "-Dspring.output.ansi.enabled=ALWAYS",
+        "-javaagent:/home/aoli/repos/exception/instrumentation/build/libs/instrumentation.jar"
     ]
 }
 
