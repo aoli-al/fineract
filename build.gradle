@@ -446,10 +446,5 @@ configure(project.fineractJavaProjects) {
     }
 
     compileJava {
-        if (project.hasProperty('automatedBuild')) {
-            dependsOn(spotlessCheck)
-        } else {
-            dependsOn(spotlessApply)
-        }
     }
 }

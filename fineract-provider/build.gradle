@@ -476,6 +476,9 @@ springBoot {
 
 bootJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//    layered {
+//        enabled = false
+//    }
 }
 
 bootWar {
