@@ -264,6 +264,7 @@ allprojects  {
             '**/*.json.template',
             '**/*.txt',
             '**/*.log',
+            '**/*.properties',
             '**/fineractdev-eclipse-preferences.epf',
             '**/template-expected.html',
             '**/template.mustache',
