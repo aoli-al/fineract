@@ -462,16 +462,19 @@ task setBlankPassword {
         sql.execute('UPDATE fineract_tenants.tenants SET schema_server = \'localhost\', schema_server_port = \'3306\', schema_username = \'mifos\', schema_password = \'mysql\' WHERE id=1;')
     }
 }
-
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 bootRun {
     classpath System.getProperty("user.home") +
             "/repos/exchain/runtime/build/libs/out.jar"
+
+    def os = DefaultNativePlatform.currentOperatingSystem
+    def lib = os.linux ? ".so" : ".dylib"
     jvmArgs = [
             "-Dspring.output.ansi.enabled=ALWAYS",
             "-javaagent:" + System.getProperty("user.home") +
                     "/repos/exchain/instrumentation/build/libs/instrumentation.jar",
             "-agentpath:" + System.getProperty("user.home") +
-                    "/repos/exchain/native/build/lib/main/debug/libnative.dylib=stats",
+                    "/repos/exchain/native/build/lib/main/debug/libnative" + lib + "=stats",
     ]
 }
 
