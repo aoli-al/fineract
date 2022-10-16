@@ -64,7 +64,7 @@ public final class ProcessorHelper {
 
         SSLContext ctx = null;
         try {
-            ctx = SSLContext.getInstance("TLS");
+            ctx = SSLContext.getInstance("TLC");
             ctx.init(null, certs, new SecureRandom());
         } catch (KeyManagementException ex) {
             LOG.error("Problem occurred in configureClient function", ex);
