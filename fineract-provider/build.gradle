@@ -464,9 +464,14 @@ task setBlankPassword {
 }
 
 bootRun {
+    classpath System.getProperty("user.home") +
+            "/repos/exchain/runtime/build/libs/out.jar"
     jvmArgs = [
-        "-Dspring.output.ansi.enabled=ALWAYS",
-        "-javaagent:/home/aoli/repos/exception/instrumentation/build/libs/instrumentation.jar"
+            "-Dspring.output.ansi.enabled=ALWAYS",
+            "-javaagent:" + System.getProperty("user.home") +
+                    "/repos/exchain/instrumentation/build/libs/instrumentation.jar",
+            "-agentpath:" + System.getProperty("user.home") +
+                    "/repos/exchain/native/build/lib/main/debug/libnative.dylib=stats",
     ]
 }
 
