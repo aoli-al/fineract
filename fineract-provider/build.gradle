@@ -464,17 +464,15 @@ task setBlankPassword {
 }
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 bootRun {
-    classpath System.getProperty("user.home") +
-            "/repos/exchain/runtime/build/libs/out.jar"
 
     def os = DefaultNativePlatform.currentOperatingSystem
     def lib = os.linux ? ".so" : ".dylib"
+    def exchain = project.projectDir.getAbsolutePath() + "/../../../"
+    classpath exchain + "runtime/build/libs/out.jar"
     jvmArgs = [
             "-Dspring.output.ansi.enabled=ALWAYS",
-            "-javaagent:" + System.getProperty("user.home") +
-                    "/repos/exchain/instrumentation/build/libs/instrumentation.jar",
-            "-agentpath:" + System.getProperty("user.home") +
-                    "/repos/exchain/native/build/lib/main/debug/libnative" + lib + "=stats",
+            "-javaagent:" + exchain + "instrumentation/build/libs/instrumentation.jar",
+            "-agentpath:" + exchain + "native/build/lib/main/debug/libnative" + lib + "=stats",
     ]
 }
 
