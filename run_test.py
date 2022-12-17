@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import click
+import time
 DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(DIR, ".."))
 from commons import *
@@ -32,31 +33,60 @@ def instrument(debug: bool):
 @main.command(name="origin")
 @click.option('--debug', default=False, help='Enable debugging.')
 def origin(debug: bool):
+    # pre()
     command = ["-jar", f"fineract-provider/build/libs/fineract-provider.jar"]
     if debug:
         command.insert(0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-    subprocess.call(["java"] + command, cwd=DIR)
+    cmd = subprocess.Popen(["java"] + command, cwd=DIR, stdout=subprocess.PIPE)
+    wait_up(cmd)
+    post()
+    cmd.kill()
 
 
 def pre():
-    pass
+    subprocess.call("docker rm -f mysql-5.7", shell=True)
+    subprocess.call("docker run --name mysql-5.7 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=mysql -d mysql:5.7", shell=True)
+    time.sleep(10)
+    subprocess.call("./gradlew createDB -PdbName=fineract_tenants", shell=True)
+    subprocess.call("./gradlew createDB -PdbName=fineract_default", shell=True)
+
 
 def post():
-    pass
+    subprocess.call(
+        "./gradlew integrationTest --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True)
 
-def is_up():
-    pass
+def wait_up(cmd):
+    for line in cmd.stdout:
+        print(line)
+        if "org.apache.fineract.ServerApplication    : Started ServerApplication" in line.decode("utf-8"):
+            break
+
 
 
 @main.command(name="dynamic")
 def dynamic():
-    subprocess.call([INSTRUMENTED_JAVA_EXEC,
-                     "-jar",
-                     f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
-                     f"-javaagent:{PHOSPHOR_AGENT_PATH}",
-                     f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
-                     f"-agentpath:{NATIVE_LIB_PATH}=taint",
-                     "org.apache.hadoop.hdfs.server.namenode.TestCheckpoint"])
+    # pre()
+    print(" ".join([INSTRUMENTED_JAVA_EXEC,
+                    f"-javaagent:{PHOSPHOR_AGENT_PATH}",
+                    f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
+                    f"-agentpath:{NATIVE_LIB_PATH}=taint",
+                    "org.apache.hadoop.hdfs.server.namenode.TestCheckpoint",
+                    "-jar",
+                    f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
+                    ]))
+    # cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC,
+    #                         "-jar",
+    #                         f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
+    #                         f"-javaagent:{PHOSPHOR_AGENT_PATH}",
+    #                         f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
+    #                         f"-agentpath:{NATIVE_LIB_PATH}=taint",
+    #                         "org.apache.hadoop.hdfs.server.namenode.TestCheckpoint"],
+    #                         cwd=DIR)
+    # cmd.communicate()
+    # wait_up(cmd)
+    # post()
+    # cmd.kill()
+    # print(cmd.communicate())
 
 
 if __name__ == '__main__':
