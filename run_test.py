@@ -65,28 +65,18 @@ def wait_up(cmd):
 
 @main.command(name="dynamic")
 def dynamic():
-    # pre()
-    print(" ".join([INSTRUMENTED_JAVA_EXEC,
-                    f"-javaagent:{PHOSPHOR_AGENT_PATH}",
-                    f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
-                    f"-agentpath:{NATIVE_LIB_PATH}=taint",
-                    "org.apache.hadoop.hdfs.server.namenode.TestCheckpoint",
-                    "-jar",
-                    f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
-                    ]))
-    # cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC,
-    #                         "-jar",
-    #                         f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
-    #                         f"-javaagent:{PHOSPHOR_AGENT_PATH}",
-    #                         f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
-    #                         f"-agentpath:{NATIVE_LIB_PATH}=taint",
-    #                         "org.apache.hadoop.hdfs.server.namenode.TestCheckpoint"],
-    #                         cwd=DIR)
-    # cmd.communicate()
-    # wait_up(cmd)
-    # post()
-    # cmd.kill()
-    # print(cmd.communicate())
+    pre()
+    cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC,
+                            f"-javaagent:{PHOSPHOR_AGENT_PATH}",
+                            f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
+                            f"-agentpath:{NATIVE_LIB_PATH}=taint:Lorg/apache/fineract",
+                            "-jar",
+                            f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
+                            ],
+                            cwd=DIR, stdout=subprocess.PIPE)
+    wait_up(cmd)
+    post()
+    cmd.kill()
 
 
 if __name__ == '__main__':
