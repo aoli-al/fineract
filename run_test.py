@@ -22,7 +22,8 @@ def build():
 @main.command(name="instrument")
 @click.option('--debug', default=False, help='Enable debugging.')
 def instrument(debug: bool):
-    command = [f"-DPhosphor.INSTRUMENTED_CLASSPATH={INSTRUMENTATION_CLASSPATH}",
+    command = [f"-DPhosphor.INSTRUMENTATION_CLASSPATH={INSTRUMENTATION_CLASSPATH}",
+               f"-DPhosphor.ORIGIN_CLASSPATH={ORIGIN_CLASSPATH}",
                "-cp", PHOSPHOR_JAR_PATH, "edu.columbia.cs.psl.phosphor.Instrumenter",
                "fineract-provider/build/libs/fineract-provider.jar", INSTRUMENTATION_FOLDER_NAME]
     if debug:
@@ -68,8 +69,8 @@ def dynamic():
     pre()
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC,
                             f"-javaagent:{PHOSPHOR_AGENT_PATH}",
-                            f"-javaagent:{RUNTIME_JAR_PATH}={INSTRUMENTATION_CLASSPATH}",
-                            f"-agentpath:{NATIVE_LIB_PATH}=taint:Lorg/apache/fineract",
+                            f"-javaagent:{RUNTIME_JAR_PATH}=dynamic:{INSTRUMENTATION_CLASSPATH}",
+                            f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
                             "-jar",
                             f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
                             ],
