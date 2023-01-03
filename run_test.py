@@ -63,6 +63,22 @@ def wait_up(cmd):
             break
 
 
+@main.command(name="static")
+def static():
+    pre()
+    cmd = subprocess.Popen(["java",
+                            f"-javaagent:{RUNTIME_JAR_PATH}=static:{INSTRUMENTATION_CLASSPATH}",
+                            f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
+                            "-jar",
+                            f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
+                            ],
+                            cwd=DIR, stdout=subprocess.PIPE)
+    wait_up(cmd)
+    post()
+    cmd.kill()
+    args = ["./gradlew", "static-analyzer:run", f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
+    subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+
 
 @main.command(name="dynamic")
 def dynamic():
