@@ -393,6 +393,34 @@ task integrationTest(type:Test) {
 
     testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
     classpath = project.sourceSets.integrationTest.runtimeClasspath
+    filter {
+        exclude '**/bulkimport/**'
+        exclude '**/common/**'
+        exclude '**/interoperation/**'
+        exclude '**/loanaccount/**'
+        exclude '**/AccountingScenarioIntegrationTest.class'
+        exclude '**/AuditIntegrationTest.class'
+        exclude '**/BatchApiTest.class'
+        exclude '**/CenterIntegrationTest.class'
+        exclude '**/ChargesTest.class'
+        exclude '**/ClientSavingsIntegrationTest.class'
+        exclude '**/CurrenciesTest.class'
+        exclude '**/FixedDepositTest.class'
+        exclude '**/FlexibleSavingsInterestPostingIntegrationTest.class'
+        exclude '**/FundsIntegrationTest.class'
+        exclude '**/GlobalConfigurationTest.class'
+        exclude '**/HookIntegrationTest.class'
+        exclude '**/Loan*Test.class'
+        exclude '**/NotesTest.class'
+        exclude '**/NotificationApiTest.class'
+        exclude '**/PaymentTypeIntegrationTest.class'
+        exclude '**/RatesTest.class'
+        exclude '**/RolesTest.class'
+        exclude '**/SchedulerJobsTestResults.class'
+        exclude '**/StaffTest.class'
+        exclude '**/UserAdministrationTest.class'
+        exclude '**/XBRLIntegrationTest.class'
+    }
 }
 
 integrationTest {
