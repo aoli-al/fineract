@@ -77,13 +77,15 @@ def post():
 
 def wait_up(cmd):
     for line in cmd.stdout:
+        line = line.decode("utf-8")
         print(line)
-        if "org.apache.fineract.ServerApplication    : Started ServerApplication" in line.decode("utf-8"):
+        if "org.apache.fineract.ServerApplication    : Started ServerApplication" in line:
             break
 
 
 @main.command(name="hybrid")
-def hybrid():
+@click.option('--debug', default=False, help='Enable debugging.')
+def hybrid(debug: bool):
     # pre()
     args = [HYBRID_JAVA_EXEC,
             f"-javaagent:{PHOSPHOR_AGENT_PATH}=taintTagFactory=al.aoli.exchain.phosphor.instrumenter.FieldOnlyTaintTagFactory,postClassVisitor=al.aoli.exchain.phosphor.instrumenter.UninstrumentedOriginPostCV",
@@ -92,6 +94,8 @@ def hybrid():
             "-jar",
             f"{HYBRID_FOLDER_NAME}/fineract-provider.jar",
             ]
+    if debug:
+        args.insert(1, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     print(" ".join(args))
     cmd = subprocess.Popen(args, cwd=DIR, stdout=subprocess.PIPE)
 
@@ -99,26 +103,28 @@ def hybrid():
     post()
     cmd.kill()
     args = ["./gradlew", "static-analyzer:run",
-            f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
+            f"--args={ORIGIN_CLASSPATH} {DIR}/hybrid-results {ORIGIN_CLASSPATH}"]
     subprocess.call(args, cwd=os.path.join(DIR, "../.."))
 
 
 @main.command(name="static")
 def static():
-    pre()
-    cmd = subprocess.Popen(["java",
+    # pre()
+    args = ["java",
                             f"-javaagent:{RUNTIME_JAR_PATH}=static:{INSTRUMENTATION_CLASSPATH}",
                             f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
                             "-jar",
-                            f"{INSTRUMENTATION_FOLDER_NAME}/fineract-provider.jar",
-                            ],
-                           cwd=DIR, stdout=subprocess.PIPE)
-    wait_up(cmd)
-    post()
-    cmd.kill()
-    args = ["./gradlew", "static-analyzer:run",
-            f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
-    subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+                            f"fineract-provider/build/libs/fineract-provider.jar",
+                            ]
+    print(" ".join(args))
+    # cmd = subprocess.Popen(args,
+    #                        cwd=DIR, stdout=subprocess.PIPE)
+    # wait_up(cmd)
+    # post()
+    # args = ["./gradlew", "static-analyzer:run",
+    #         f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
+    # subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+    # cmd.kill()
 
 
 @main.command(name="dynamic")
