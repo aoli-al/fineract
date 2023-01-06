@@ -56,8 +56,8 @@ def origin(debug: bool):
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     cmd = subprocess.Popen(["java"] + command, cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
-    cmd.kill()
+    #  post()
+    #  cmd.kill()
 
 
 def pre():
@@ -79,8 +79,8 @@ def wait_up(cmd):
     for line in cmd.stdout:
         line = line.decode("utf-8")
         print(line)
-        if "org.apache.fineract.ServerApplication    : Started ServerApplication" in line:
-            break
+        #  if "org.apache.fineract.ServerApplication    : Started ServerApplication" in line:
+            #  break
 
 
 @main.command(name="hybrid")
@@ -100,11 +100,11 @@ def hybrid(debug: bool):
     cmd = subprocess.Popen(args, cwd=DIR, stdout=subprocess.PIPE)
 
     wait_up(cmd)
-    post()
-    cmd.kill()
-    args = ["./gradlew", "static-analyzer:run",
-            f"--args={ORIGIN_CLASSPATH} {DIR}/hybrid-results {ORIGIN_CLASSPATH}"]
-    subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+    #  post()
+    #  cmd.kill()
+    #  args = ["./gradlew", "static-analyzer:run",
+            #  f"--args={ORIGIN_CLASSPATH} {DIR}/hybrid-results {ORIGIN_CLASSPATH}"]
+    #  subprocess.call(args, cwd=os.path.join(DIR, "../.."))
 
 
 @main.command(name="static")
@@ -116,15 +116,15 @@ def static():
                             "-jar",
                             f"fineract-provider/build/libs/fineract-provider.jar",
                             ]
-    print(" ".join(args))
-    # cmd = subprocess.Popen(args,
-    #                        cwd=DIR, stdout=subprocess.PIPE)
-    # wait_up(cmd)
-    # post()
-    # args = ["./gradlew", "static-analyzer:run",
-    #         f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
-    # subprocess.call(args, cwd=os.path.join(DIR, "../.."))
-    # cmd.kill()
+    #  print(" ".join(args))
+    cmd = subprocess.Popen(args,
+                          cwd=DIR, stdout=subprocess.PIPE)
+    wait_up(cmd)
+    #  post()
+    #  args = ["./gradlew", "static-analyzer:run",
+           #  f"--args={ORIGIN_CLASSPATH} {DIR}/static-results {ORIGIN_CLASSPATH}"]
+    #  subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+    #  cmd.kill()
 
 
 @main.command(name="dynamic")
@@ -144,8 +144,8 @@ def dynamic(debug: bool):
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC] + args,
                            cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
-    cmd.kill()
+    #  post()
+    #  cmd.kill()
 
 
 if __name__ == '__main__':
