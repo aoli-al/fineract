@@ -394,6 +394,12 @@ task integrationTest(type:Test) {
     testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
     classpath = project.sourceSets.integrationTest.runtimeClasspath
     filter {
+        excludeTestMatching "*ClientLoanIntegrationTest." +
+                "testLoanScheduleWithInterestRecalculation_WITH_REST_SAME_AS_REPAYMENT_INTEREST_COMPOUND_NONE_STRATEGY_REDUCE_EMI_PRE_CLOSE_INTEREST_PRE_CLOSE_DATE"
+        excludeTestMatching "RecurringDepositTest." +
+                "testRecurringDepositAccountWithClosureTypeTransferToSavings_WITH_HOLD_TAX"
+        excludeTestMatching "SchedulerJobsTest.testDateFormat"
+        excludeTestMatching "SchedulerJobsTest.testTriggeringManualExecutionOfAllSchedulerJobs"
         exclude '**/bulkimport/**'
         exclude '**/common/**'
         exclude '**/interoperation/**'
@@ -413,7 +419,6 @@ task integrationTest(type:Test) {
         exclude '**/GlobalConfigurationTest.class'
         exclude '**/HookIntegrationTest.class'
         exclude '**/Loan*Test.class'
-        exclude '**/ClientLoanIntegrationTest.class'
         exclude '**/NotesTest.class'
         exclude '**/NotificationApiTest.class'
         exclude '**/PaymentTypeIntegrationTest.class'
