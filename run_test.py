@@ -56,7 +56,7 @@ def origin(debug: bool):
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     cmd = subprocess.Popen(["java"] + command, cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
+    post('origin')
     cmd.kill()
 
 
@@ -70,9 +70,20 @@ def pre():
     subprocess.call("./gradlew createDB -PdbName=fineract_default", shell=True)
 
 
-def post():
+def post(type):
+    if not os.path.exists("perf_result"):
+        os.mkdir("perf_result")
+    perf_dir = os.path.abspath("perf_result")
     subprocess.call(
-        "./gradlew --rerun-tasks integrationTest", shell=True)
+        "./gradlew --rerun-tasks integrationTest", shell=True, env={
+            "PERF_OUT_FILE": "/tmp/tmp.out",
+            **os.environ
+        })
+    subprocess.call(
+        "./gradlew --rerun-tasks integrationTest", shell=True, env={
+            "PERF_OUT_FILE": f"{perf_dir}/{type}.csv",
+            **os.environ
+        })
 
 
 def wait_up(cmd):
@@ -99,7 +110,7 @@ def hybrid(debug: bool):
     print(" ".join(args))
     cmd = subprocess.Popen(args, cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
+    post("hybrid")
     cmd.kill()
 
 
@@ -115,7 +126,7 @@ def static():
     cmd = subprocess.Popen(args,
                           cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
+    post("static")
     cmd.kill()
 
 
@@ -136,7 +147,7 @@ def dynamic(debug: bool):
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC] + args,
                            cwd=DIR, stdout=subprocess.PIPE)
     wait_up(cmd)
-    post()
+    post('dynamic')
     cmd.kill()
 
 

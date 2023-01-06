@@ -39,9 +39,6 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Random;
@@ -64,10 +61,10 @@ public final class Utils {
 
     static {
         try {
-            LocalDateTime myObj = LocalDateTime.now(ZoneId.systemDefault());
-            DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("MM-dd-HH-mm");
-            String forDate = "fineract-" + myObj.format(myFormat);
-            writer = Files.newBufferedWriter(Paths.get("/tmp/" + forDate + ".csv"), UTF_8);
+//            LocalDateTime myObj = LocalDateTime.now(ZoneId.systemDefault());
+//            DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("MM-dd-HH-mm");
+            String forDate = System.getenv("PERF_OUT_FILE");
+            writer = Files.newBufferedWriter(Paths.get(forDate), UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
