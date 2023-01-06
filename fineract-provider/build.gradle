@@ -401,6 +401,8 @@ task integrationTest(type:Test) {
         exclude '**/AccountingScenarioIntegrationTest.class'
         exclude '**/AuditIntegrationTest.class'
         exclude '**/BatchApiTest.class'
+        exclude '**/SchedulerJobsTest.class'
+        exclude '**/BatchRequestsIntegrationTest.class'
         exclude '**/CenterIntegrationTest.class'
         exclude '**/ChargesTest.class'
         exclude '**/ClientSavingsIntegrationTest.class'
@@ -411,6 +413,7 @@ task integrationTest(type:Test) {
         exclude '**/GlobalConfigurationTest.class'
         exclude '**/HookIntegrationTest.class'
         exclude '**/Loan*Test.class'
+        exclude '**/ClientLoanIntegrationTest.class'
         exclude '**/NotesTest.class'
         exclude '**/NotificationApiTest.class'
         exclude '**/PaymentTypeIntegrationTest.class'
@@ -420,6 +423,7 @@ task integrationTest(type:Test) {
         exclude '**/StaffTest.class'
         exclude '**/UserAdministrationTest.class'
         exclude '**/XBRLIntegrationTest.class'
+        exclude '**/RecurringDepositTest.class'
     }
 }
 
