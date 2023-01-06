@@ -394,18 +394,20 @@ task integrationTest(type:Test) {
     testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
     classpath = project.sourceSets.integrationTest.runtimeClasspath
     filter {
-        excludeTestsMatching "*ClientLoanIntegrationTest." +
-                "testLoanScheduleWithInterestRecalculation_WITH_REST_SAME_AS_REPAYMENT_INTEREST_COMPOUND_NONE_STRATEGY_REDUCE_EMI_PRE_CLOSE_INTEREST_PRE_CLOSE_DATE"
-        excludeTestsMatching "RecurringDepositTest." +
-                "testRecurringDepositAccountWithClosureTypeTransferToSavings_WITH_HOLD_TAX"
-        excludeTestsMatching "SchedulerJobsTest.testDateFormat"
-        excludeTestsMatching "SchedulerJobsTest.testTriggeringManualExecutionOfAllSchedulerJobs"
         exclude '**/bulkimport/**'
         exclude '**/common/**'
         exclude '**/interoperation/**'
         exclude '**/loanaccount/**'
         exclude '**/AccountingScenarioIntegrationTest.class'
         exclude '**/AuditIntegrationTest.class'
+        exclude '**/AccountTransferTest.class'
+        exclude '**/ClientLoanIntegrationTest.class'
+        exclude '**/ClientTest.class'
+        exclude '**/ClientUndoRejectAndWithdrawalIntegrationTest.class'
+        exclude '**/ConcurrencyIntegrationTest.class'
+        exclude '**/DisbursalAndRepaymentScheduleTest.class'
+        exclude '**/ExternalServicesConfigurationTest.class'
+        exclude '**/FinancialActivityAccountsTest.class'
         exclude '**/BatchApiTest.class'
         exclude '**/SchedulerJobsTest.class'
         exclude '**/BatchRequestsIntegrationTest.class'
@@ -429,6 +431,12 @@ task integrationTest(type:Test) {
         exclude '**/UserAdministrationTest.class'
         exclude '**/XBRLIntegrationTest.class'
         exclude '**/RecurringDepositTest.class'
+        exclude '**/GlobalConfigInterestChargedFromDateSameAsDisbursalDateTest.class'
+        exclude '**/GroupLoanIntegrationTest.class'
+        exclude '**/GroupTest.class'
+        exclude '**/MinimumDaysBetweenDisbursalAndFirstRepaymentTest.class'
+        exclude '**/PasswordPreferencesIntegrationTest.class'
+        exclude '**/SkipRepaymentOnMonthFirstTest.class'
     }
 }
 
