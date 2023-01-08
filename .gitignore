@@ -24,3 +24,4 @@ fineract-provider/config/swagger/fineract-input.yaml
 hybrid-results
 static-results
 dynamic-results
+perf_result
