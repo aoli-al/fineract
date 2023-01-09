@@ -71,8 +71,19 @@ def pre():
 
 
 def post(type):
+    if not os.path.exists("perf_result"):
+        os.mkdir("perf_result")
+    perf_dir = os.path.abspath("perf_result")
     subprocess.call(
-        "./gradlew integrationTest --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True)
+        "./gradlew --rerun-tasks integrationTest", shell=True, env={
+            "PERF_OUT_FILE": "/tmp/tmp.out",
+            **os.environ
+        })
+    subprocess.call(
+        "./gradlew --rerun-tasks integrationTest", shell=True, env={
+            "PERF_OUT_FILE": f"{perf_dir}/{type}.csv",
+            **os.environ
+        })
 
 
 def wait_up(cmd):
