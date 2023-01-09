@@ -54,8 +54,9 @@ def origin(debug: bool):
     if debug:
         command.insert(
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-    cmd = subprocess.Popen(["java"] + command, cwd=DIR, stdout=subprocess.PIPE)
-    wait_up(cmd)
+    cmd = subprocess.Popen(["java"] + command, cwd=DIR)
+    time.sleep(20)
+    #  wait_up(cmd)
     post('origin')
     cmd.kill()
 
@@ -108,8 +109,9 @@ def hybrid(debug: bool):
     if debug:
         args.insert(1, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     print(" ".join(args))
-    cmd = subprocess.Popen(args, cwd=DIR, stdout=subprocess.PIPE)
-    wait_up(cmd)
+    cmd = subprocess.Popen(args, cwd=DIR)
+    time.sleep(100)
+    #  wait_up(cmd)
     post("hybrid")
     cmd.kill()
 
@@ -123,9 +125,11 @@ def static():
                             "-jar",
                             f"fineract-provider/build/libs/fineract-provider.jar",
                             ]
-    cmd = subprocess.Popen(args,
-                          cwd=DIR, stdout=subprocess.PIPE)
-    wait_up(cmd)
+    #  cmd = subprocess.Popen(args,
+                          #  cwd=DIR, stdout=subprocess.PIPE)
+    cmd = subprocess.Popen(args, cwd=DIR)
+    #  wait_up(cmd)
+    time.sleep(100)
     post("static")
     cmd.kill()
 
@@ -135,6 +139,7 @@ def static():
 def dynamic(debug: bool):
     pre()
     args = [
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
         f"-javaagent:{PHOSPHOR_AGENT_PATH}",
         f"-javaagent:{RUNTIME_JAR_PATH}=dynamic:{INSTRUMENTATION_CLASSPATH}",
         f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
@@ -145,8 +150,9 @@ def dynamic(debug: bool):
         args.insert(
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC] + args,
-                           cwd=DIR, stdout=subprocess.PIPE)
-    wait_up(cmd)
+                           cwd=DIR)
+    time.sleep(300)
+    #  wait_up(cmd)
     post('dynamic')
     cmd.kill()
 
