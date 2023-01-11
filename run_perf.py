@@ -98,7 +98,7 @@ def wait_up(cmd):
 @main.command(name="hybrid")
 @click.option('--debug', default=False, help='Enable debugging.')
 def hybrid(debug: bool):
-    pre()
+    #  pre()
     args = [HYBRID_JAVA_EXEC,
             f"-javaagent:{PHOSPHOR_AGENT_PATH}=taintTagFactory=al.aoli.exchain.phosphor.instrumenter.FieldOnlyTaintTagFactory,postClassVisitor=al.aoli.exchain.phosphor.instrumenter.UninstrumentedOriginPostCV",
             f"-javaagent:{RUNTIME_JAR_PATH}=hybrid:{HYBRID_CLASSPATH}",
@@ -109,11 +109,10 @@ def hybrid(debug: bool):
     if debug:
         args.insert(1, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     print(" ".join(args))
-    cmd = subprocess.Popen(args, cwd=DIR)
-    time.sleep(100)
-    #  wait_up(cmd)
-    post("hybrid")
-    cmd.kill()
+    #  cmd = subprocess.Popen(args, cwd=DIR)
+    #  time.sleep(100)
+    #  post("hybrid")
+    #  cmd.kill()
 
 
 @main.command(name="static")

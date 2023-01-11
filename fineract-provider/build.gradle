@@ -388,6 +388,13 @@ if (!(project.hasProperty('env') && project.getProperty('env') == 'dev')) {
     }
 }
 
+task triggerBug(type:Test) {
+    description = "Run integration tests (located in src/integrationTest/java). Starts Tomcat in daemon mode before executing the tests (and stops it after)."
+
+    testClassesDirs = project.sourceSets.integrationTest.output.classesDirs
+    classpath = project.sourceSets.integrationTest.runtimeClasspath
+}
+
 task integrationTest(type:Test) {
     description = "Run integration tests (located in src/integrationTest/java). Starts Tomcat in daemon mode before executing the tests (and stops it after)."
 
@@ -440,6 +447,16 @@ task integrationTest(type:Test) {
     }
 }
 
+triggerBug {
+    useJUnitPlatform()
+    testLogging {
+        // FINERACT-927
+        events "skipped", "failed"
+        showStandardStreams = false
+        exceptionFormat "full"
+    }
+
+}
 integrationTest {
     useJUnitPlatform()
     testLogging {

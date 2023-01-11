@@ -23,7 +23,7 @@ def build():
 @main.command(name="instrument")
 @click.option('--debug', default=False, help='Enable debugging.')
 def instrument(debug: bool):
-    subprocess.call("jenv local 16", shell=True)
+    subprocess.call("jenv local 16.0", shell=True)
     command = [f"-DPhosphor.INSTRUMENTATION_CLASSPATH={INSTRUMENTATION_CLASSPATH}",
                f"-DPhosphor.ORIGIN_CLASSPATH={ORIGIN_CLASSPATH}",
                "-cp", PHOSPHOR_JAR_PATH, "edu.columbia.cs.psl.phosphor.Instrumenter",
@@ -62,7 +62,7 @@ def origin(debug: bool):
 
 
 def pre():
-    subprocess.call("jenv local 11", shell=True)
+    subprocess.call("jenv local 11.0", shell=True)
     subprocess.call("docker rm -f mysql-5.7", shell=True)
     subprocess.call(
         "docker run --name mysql-5.7 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=mysql -d mysql:5.7", shell=True)
@@ -73,7 +73,7 @@ def pre():
 
 def post(type):
     subprocess.call(
-        "./gradlew integrationTest --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True)
+        "./gradlew :fineract-provider:triggerBug --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True)
 
 
 def wait_up(cmd):
@@ -140,7 +140,7 @@ def dynamic(debug: bool):
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC] + args,
                            cwd=DIR)
-    time.sleep(300)
+    time.sleep(2000)
     #  wait_up(cmd)
     post('dynamic')
     cmd.kill()
