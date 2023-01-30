@@ -73,8 +73,11 @@ def pre():
 
 def post(type):
     subprocess.call(
-        "./gradlew :fineract-provider:triggerBug --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True)
+        "./gradlew :fineract-provider:triggerBug --tests org.apache.fineract.integrationtests.HookIntegrationTest.shouldSendOfficeCreationNotification", shell=True,
 
+        env={ "PERF_OUT_FILE": "/tmp/out",
+            **os.environ
+            })
 
 def wait_up(cmd):
     for line in cmd.stdout:
