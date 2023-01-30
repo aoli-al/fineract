@@ -143,7 +143,7 @@ def dynamic(debug: bool):
             0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     cmd = subprocess.Popen([INSTRUMENTED_JAVA_EXEC] + args,
                            cwd=DIR)
-    time.sleep(2000)
+    time.sleep(60)
     #  wait_up(cmd)
     post('dynamic')
     cmd.kill()
