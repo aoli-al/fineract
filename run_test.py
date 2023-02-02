@@ -109,21 +109,28 @@ def hybrid(debug: bool):
 
 
 @main.command(name="static")
-def static():
-    pre()
-    args = ["java",
-                            f"-javaagent:{RUNTIME_JAR_PATH}=static:{INSTRUMENTATION_CLASSPATH}",
-                            f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
-                            "-jar",
-                            f"fineract-provider/build/libs/fineract-provider.jar",
-                            ]
-    #  cmd = subprocess.Popen(args,
-                          #  cwd=DIR, stdout=subprocess.PIPE)
-    cmd = subprocess.Popen(args, cwd=DIR)
-    #  wait_up(cmd)
-    time.sleep(100)
-    post("static")
-    cmd.kill()
+@click.option('--rerun', is_flag=True, default=False, help='Rerun the application.')
+def static(rerun: bool):
+    if rerun:
+        pre()
+        args = ["java",
+                                f"-javaagent:{RUNTIME_JAR_PATH}=static:{INSTRUMENTATION_CLASSPATH}",
+                                f"-agentpath:{NATIVE_LIB_PATH}=exchain:Lorg/apache/fineract",
+                                "-jar",
+                                f"fineract-provider/build/libs/fineract-provider.jar",
+                                ]
+        #  cmd = subprocess.Popen(args,
+                              #  cwd=DIR, stdout=subprocess.PIPE)
+        cmd = subprocess.Popen(args, cwd=DIR)
+        #  wait_up(cmd)
+        time.sleep(20)
+        post("static")
+        cmd.kill()
+    args = ["./gradlew", "static-analyzer:run", f"--args={ORIGIN_CLASSPATH} {DIR}/static-results"]
+    subprocess.call(args, cwd=os.path.join(DIR, "../.."))
+
+
+
 
 
 @main.command(name="dynamic")
