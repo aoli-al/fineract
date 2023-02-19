@@ -19,6 +19,7 @@
 package org.apache.fineract.integrationtests.common;
 
 import static io.restassured.RestAssured.given;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -29,7 +30,11 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,11 +56,23 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unchecked")
 public final class Utils {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
+    private static BufferedWriter writer;
+
+    static {
+        try {
+            // LocalDateTime myObj = LocalDateTime.now(ZoneId.systemDefault());
+            // DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("MM-dd-HH-mm");
+            String forDate = System.getenv("PERF_OUT_FILE");
+            writer = Files.newBufferedWriter(Paths.get(forDate), UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Utils() {
 
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     public static final String TENANT_PARAM_NAME = "tenantIdentifier";
     public static final String DEFAULT_TENANT = "default";
@@ -137,7 +154,9 @@ public final class Utils {
 
     public static <T> T performServerGet(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String getURL, final String jsonAttributeToGetBack) {
-        final String json = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn().asString();
+        var response = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn();
+        logProcessingTime(getURL, response.time());
+        final String json = response.asString();
         if (jsonAttributeToGetBack == null) {
             return (T) json;
         }
@@ -146,18 +165,24 @@ public final class Utils {
 
     public static String performGetTextResponse(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String getURL) {
-        return given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn().asString();
+        var response = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn();
+        logProcessingTime(getURL, response.time());
+        return response.asString();
     }
 
     public static byte[] performGetBinaryResponse(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String getURL) {
-        return given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn().asByteArray();
+        var response = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().get(getURL).andReturn();
+        logProcessingTime(getURL, response.time());
+        return response.asByteArray();
     }
 
     public static <T> T performServerPost(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String postURL, final String jsonBodyToSend, final String jsonAttributeToGetBack) {
-        final String json = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when().post(postURL)
-                .andReturn().asString();
+        var response = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when().post(postURL)
+                .andReturn();
+        logProcessingTime(postURL, response.time());
+        final String json = response.asString();
         if (jsonAttributeToGetBack == null) {
             return (T) json;
         }
@@ -166,23 +191,37 @@ public final class Utils {
 
     public static <T> T performServerPut(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String putURL, final String jsonBodyToSend, final String jsonAttributeToGetBack) {
-        final String json = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when().put(putURL)
-                .andReturn().asString();
+        var response = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when().put(putURL)
+                .andReturn();
+        logProcessingTime(putURL, response.time());
+        final String json = response.asString();
         return (T) JsonPath.from(json).get(jsonAttributeToGetBack);
     }
 
     public static <T> T performServerDelete(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String deleteURL, final String jsonAttributeToGetBack) {
-        final String json = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().delete(deleteURL).andReturn()
-                .asString();
+        var response = given().spec(requestSpec).expect().spec(responseSpec).log().ifError().when().delete(deleteURL).andReturn();
+        logProcessingTime(deleteURL, response.time());
+        final String json = response.asString();
         return (T) JsonPath.from(json).get(jsonAttributeToGetBack);
     }
 
     public static <T> T performServerDelete(final RequestSpecification requestSpec, final ResponseSpecification responseSpec,
             final String deleteURL, final String jsonBodyToSend, final String jsonAttributeToGetBack) {
-        final String json = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when()
-                .delete(deleteURL).andReturn().asString();
+        var response = given().spec(requestSpec).body(jsonBodyToSend).expect().spec(responseSpec).log().ifError().when().delete(deleteURL)
+                .andReturn();
+        logProcessingTime(deleteURL, response.time());
+        final String json = response.asString();
         return (T) (jsonAttributeToGetBack == null ? json : JsonPath.from(json).get(jsonAttributeToGetBack));
+    }
+
+    public static void logProcessingTime(String url, long time) {
+        try {
+            writer.write(url + ", " + time + "\n");
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String convertDateToURLFormat(final String dateToBeConvert) throws ParseException {

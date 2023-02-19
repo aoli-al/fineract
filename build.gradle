@@ -328,6 +328,7 @@ allprojects  {
             // Git build info
             "**/git.properties",
             ".mailmap",
+            ".java-version"
         ]
     }
 }
