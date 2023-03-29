@@ -19,6 +19,7 @@
 package org.apache.fineract.notification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
@@ -26,6 +27,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
+
+import org.apache.fineract.infrastructure.hooks.processor.ProcessorHelper;
+import org.apache.fineract.infrastructure.hooks.processor.WebHookService;
 import org.apache.fineract.notification.domain.Topic;
 import org.apache.fineract.notification.domain.TopicRepository;
 import org.apache.fineract.notification.domain.TopicSubscriber;
@@ -99,6 +103,12 @@ public class TopicTest {
         verify(this.topicSubscriberWritePltfService, times(1)).create(refEq(topicSubscriber));
         assertEquals(subscriberId, Long.valueOf(1));
 
+    }
+
+    @Test
+    public void testProcessHelper() {
+        WebHookService service = ProcessorHelper.createWebHookService("https://example.com");
+        fail();
     }
 
 }

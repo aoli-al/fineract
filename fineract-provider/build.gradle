@@ -677,3 +677,21 @@ task prepareConfigJson(dependsOn: 'generateGitProperties') {
         }
     }
 }
+
+task uberTestJar(type: Jar) {
+    dependsOn testClasses
+    classifier = 'uber-tests'
+    sourceSets.main.output.each {
+        from it
+    }
+    sourceSets.test.output.each {
+        from it
+    }
+    configurations.testRuntime.each { File f ->
+        if (f.name.endsWith('.jar')) {
+            from zipTree(f)
+        } else {
+            from f
+        }
+    }
+}
